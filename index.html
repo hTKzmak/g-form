@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #161616;
+            color: #ffffffa0;
+        }
+
+        .feedback-container {
+            width: 100%;
+            max-width: 600px;
+            background: #323232;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback-container h2 {
+            margin-bottom: 20px;
+            color: #FFF;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 97%;
+        }
+        
+        .form-group select {
+            width: 100%;
+        }
+
+        .form-group textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        .form-group button {
+            background-color: #000000;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-group button:hover {
+            background-color: #434190;
+        }
+
+        .comments {
+            margin-top: 20px;
+        }
+
+        .comment {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .comment h4 {
+            margin: 0 0 10px 0;
+        }
+
+        .filter-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="feedback-container">
+        <h2>Обратная связь</h2>
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="username">Ваше имя:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="rating">Оцените продукт:</label>
+                <select id="rating" name="rating">
+                    <option value="Отлично">Отлично</option>
+                    <option value="Хорошо">Хорошо</option>
+                    <option value="Среднее">Среднее</option>
+                    <option value="Плохо">Плохо</option>
+                    <option value="Очень плохо">Очень плохо</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="comments">Ваш отзыв:</label>
+                <textarea id="comments" name="comments" required></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit">Отправить</button>
+            </div>
+        </form>
+
+        <div class="filter-options">
+            <select id="filterRating">
+                <option value="">Все оценки</option>
+                <option value="Отлично">Отлично</option>
+                <option value="Хорошо">Хорошо</option>
+                <option value="Среднее">Среднее</option>
+                <option value="Плохо">Плохо</option>
+                <option value="Очень плохо">Очень плохо</option>
+            </select>
+        </div>
+
+        <div class="comments" id="commentsList"></div>
+    </div>
+
+    <script>
+        const feedbackForm = document.getElementById('feedbackForm');
+        const commentsList = document.getElementById('commentsList');
+        const filterRating = document.getElementById('filterRating');
+
+        let comments = [];
+
+        feedbackForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const rating = document.getElementById('rating').value;
+            const commentText = document.getElementById('comments').value;
+
+            const newComment = {
+                username,
+                rating,
+                text: commentText,
+                id: Date.now()
+            };
+
+            comments.push(newComment);
+            renderComments();
+            feedbackForm.reset();
+        });
+
+        filterRating.addEventListener('change', renderComments);
+
+        function renderComments() {
+            const selectedRating = filterRating.value;
+
+            const filteredComments = comments.filter(comment => {
+                return (
+                    (selectedRating === '' || comment.rating === selectedRating)
+                );
+            });
+
+            commentsList.innerHTML = '';
+
+            if (filteredComments.length === 0) {
+                commentsList.innerHTML = '<p>Ничего не нашли ｡ﾟ･ (>﹏<) ･ﾟ｡</p>';
+                return;
+            }
+
+            filteredComments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+                commentElement.innerHTML = `
+                    <h4>${comment.username} - Rating: ${comment.rating}</h4>
+                    <p>${comment.text}</p>
+                `;
+                commentsList.appendChild(commentElement);
+            });
+        }
+    </script>
+</body>
+
+</html>
